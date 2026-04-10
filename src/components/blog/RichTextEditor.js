@@ -1,0 +1,289 @@
+import React, { useRef, useState, useCallback } from 'react';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import { Button } from '../../ui/Button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../../ui/Dialog';
+import { Input } from '../../ui/Input';
+import { Label } from '../../ui/Label';
+import toast from 'react-hot-toast';
+
+const RichTextEditor = ({ value, onChange }) => {
+  const quillRef = useRef(null);
+  const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
+  const [isVideoDialogOpen, setIsVideoDialogOpen] = useState(false);
+  const [isTableDialogOpen, setIsTableDialogOpen] = useState(false);
+  const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
+
+  const [imageUrl, setImageUrl] = useState('https://');
+  const [imageSize, setImageSize] = useState('medium');
+  const [videoUrl, setVideoUrl] = useState('');
+  const [videoSize, setVideoSize] = useState('large');
+  const [tableRows, setTableRows] = useState(3);
+  const [tableCols, setTableCols] = useState(3);
+  const [linkUrl, setLinkUrl] = useState('https://');
+
+  const getQuillInstance = useCallback(() => {
+    if (quillRef.current) {
+      return quillRef.current.getEditor();
+    }
+    return null;
+  }, []);
+
+  const modules = {
+    toolbar: [
+      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+      ['bold', 'italic', 'underline', 'strike'],
+      [{ 'color': [] }, { 'background': [] }],
+      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+      [{ 'indent': '-1' }, { 'indent': '+1' }],
+      [{ 'align': [] }],
+      ['blockquote', 'code-block'],
+      ['link', 'image', 'video'],
+      ['clean']
+    ],
+    clipboard: { matchVisual: true }
+  };
+
+  const formats = [
+    'header', 'bold', 'italic', 'underline', 'strike', 'blockquote', 'list', 'bullet', 'indent',
+    'link', 'image', 'video', 'align', 'color', 'background', 'code-block'
+  ];
+
+  const handleAddLink = () => {
+    setIsLinkDialogOpen(false);
+    if (linkUrl.startsWith('http')) {
+      const quill = getQuillInstance();
+      if (quill) {
+        const range = quill.getSelection(true);
+        quill.formatText(range.index, range.length, 'link', linkUrl);
+        toast.success('Link added!');
+      }
+    } else {
+      toast.error('Enter valid URL');
+    }
+    setLinkUrl('https://');
+  };
+
+  const handleAddImage = () => {
+    setIsImageDialogOpen(false);
+    if (imageUrl.startsWith('http') || imageUrl.startsWith('data:')) {
+      const quill = getQuillInstance();
+      if (quill) {
+        const sizeMap = { small: '300px', medium: '600px', large: '900px', full: '100%' };
+        const style = `max-width: ${sizeMap[imageSize] || '600px'}; width: 100%; height: auto;`;
+        const html = `<img src="${imageUrl}" alt="Image" style="${style}" />`;
+        const range = quill.getSelection(true);
+        quill.clipboard.dangerouslyPasteHTML(range.index, html);
+        toast.success('Image added!');
+      }
+    } else {
+      toast.error('Enter valid image URL');
+    }
+    setImageUrl('https://');
+  };
+
+  const handleAddVideo = () => {
+    setIsVideoDialogOpen(false);
+    if (videoUrl) {
+      const quill = getQuillInstance();
+      if (quill) {
+        let embedUrl = videoUrl.includes('youtube.com/watch?v=') 
+          ? videoUrl.replace('watch?v=', 'embed/') 
+          : videoUrl;
+        quill.insertEmbed(quill.getSelection().index, 'video', embedUrl);
+        toast.success('Video added!');
+      }
+    } else {
+      toast.error('Enter video URL');
+    }
+    setVideoUrl('');
+  };
+
+  const handleAddTable = () => {
+    setIsTableDialogOpen(false);
+    const tableHtml = `
+      <table style="width:100%; border-collapse: collapse; margin: 1em 0;">
+        <thead><tr>${Array(tableCols).fill('<th style="border:1px solid #ddd;padding:8px;background:#f5f5f5;">Header</th>').join('')}</tr></thead>
+        <tbody>${Array(tableRows).fill().map(() => `<tr>${Array(tableCols).fill('<td style="border:1px solid #ddd;padding:8px;">Content</td>').join('')}</tr>`).join('')}</tbody>
+      </table>
+    `;
+    const quill = getQuillInstance();
+    quill.clipboard.dangerouslyPasteHTML(quill.getSelection().index, tableHtml);
+    toast.success('Table added!');
+  };
+
+  return (
+    <div className="w-full h-full rounded-2xl p-1">
+      <style>{`
+        .ql-container {
+          font-size: 16px !important;
+          border-radius: 1rem !important;
+        }
+        .ql-editor {
+          min-height: 400px !important;
+          color: #e5e7eb !important;
+          font-family: 'Inter', sans-serif !important;
+        }
+        .ql-toolbar {
+          border-top-left-radius: 1rem !important;
+          border-top-right-radius: 1rem !important;
+          background: #1e293b !important;
+          border-color: #374151 !important;
+        }
+        .ql-toolbar button {
+          color: #9ca3af !important;
+        }
+        .ql-toolbar button:hover {
+          background: #374151 !important;
+          color: white !important;
+        }
+        .ql-editor h1 { color: white !important; font-size: 2.5em !important; }
+        .ql-editor h2 { color: white !important; font-size: 2em !important; }
+        .ql-editor h3 { color: white !important; font-size: 1.5em !important; }
+        .ql-editor blockquote {
+          border-left: 4px solid #3b82f6 !important;
+          background: #1e293b !important;
+          padding-left: 1rem !important;
+        }
+        .ql-editor pre {
+          background: #111827 !important;
+          border: 1px solid #374151 !important;
+        }
+      `}</style>
+
+      <ReactQuill
+        ref={quillRef}
+        theme="snow"
+        value={value || ''}
+        onChange={onChange}
+        modules={modules}
+        formats={formats}
+        placeholder="Start writing your content here..."
+        className="h-full"
+      />
+
+      {/* Custom Toolbar Buttons */}
+      <div className="custom-toolbar absolute top-2 right-2 flex gap-1 bg-slate-900/90 backdrop-blur-sm p-2 rounded-xl border border-slate-700 shadow-2xl z-50">
+        <motion.button onClick={() => setIsLinkDialogOpen(true)} title="Link" whileHover={{ scale: 1.1 }}>
+<svg className="w-5 h-5 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 1 1 0 00.828 2.828z" />
+          </svg>
+        </motion.button>
+        <motion.button onClick={() => setIsImageDialogOpen(true)} title="Image" whileHover={{ scale: 1.1 }}>
+          <svg className="w-5 h-5 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" />
+          </svg>
+        </motion.button>
+        <motion.button onClick={() => setIsVideoDialogOpen(true)} title="Video" whileHover={{ scale: 1.1 }}>
+          <svg className="w-5 h-5 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm3 2h6v4H7V5zm8 8v2h1v-2h-1zm-2-2H7v4h6v-4z" />
+          </svg>
+        </motion.button>
+        <motion.button onClick={() => setIsTableDialogOpen(true)} title="Table" whileHover={{ scale: 1.1 }}>
+          <svg className="w-5 h-5 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M5 4a3 3 0 00-3 3v6a3 3 0 003 3h10a3 3 0 003-3V7a3 3 0 00-3-3H5zm-1 9v-1h5v2H5v1h10v-2H9v-1H4zm9-1H9V8h5v4z" />
+          </svg>
+        </motion.button>
+      </div>
+
+      {/* Link Dialog */}
+      <Dialog open={isLinkDialogOpen} onOpenChange={setIsLinkDialogOpen}>
+        <DialogContent className="bg-slate-900 border-slate-700 text-white">
+          <DialogHeader>
+            <DialogTitle>Insert Link</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>URL</Label>
+              <Input
+                value={linkUrl}
+                onChange={(e) => setLinkUrl(e.target.value)}
+                className="mt-2 bg-slate-800 border-slate-600"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsLinkDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleAddLink}>Insert Link</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Image Dialog */}
+      <Dialog open={isImageDialogOpen} onOpenChange={setIsImageDialogOpen}>
+        <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Insert Image</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>Image URL</Label>
+              <Input
+                value={imageUrl}
+                onChange={(e) => setImageUrl(e.target.value)}
+                className="mt-2 bg-slate-800 border-slate-600"
+              />
+            </div>
+            <div>
+              <Label>Size</Label>
+              <select
+                value={imageSize}
+                onChange={(e) => setImageSize(e.target.value)}
+                className="w-full mt-2 bg-slate-800 border-slate-600 p-3 rounded-xl"
+              >
+                <option value="small">Small (300px)</option>
+                <option value="medium">Medium (600px)</option>
+                <option value="large">Large (900px)</option>
+                <option value="full">Full Width</option>
+              </select>
+            </div>
+            {imageUrl && (
+              <img src={imageUrl} alt="Preview" className="w-full h-64 object-contain rounded-xl border border-slate-600 mt-4" />
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => {
+              setIsImageDialogOpen(false);
+              setImageUrl('https://');
+            }}>Cancel</Button>
+            <Button onClick={handleAddImage}>Insert Image</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Simplified other dialogs for brevity */}
+      <Dialog open={isVideoDialogOpen} onOpenChange={setIsVideoDialogOpen}>
+        <DialogContent className="bg-slate-900 border-slate-700 text-white">
+          <DialogHeader><DialogTitle>Video URL (YouTube)</DialogTitle></DialogHeader>
+          <Input value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} className="mt-4 bg-slate-800 border-slate-600" />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsVideoDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleAddVideo}>Insert Video</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isTableDialogOpen} onOpenChange={setIsTableDialogOpen}>
+        <DialogContent className="bg-slate-900 border-slate-700 text-white">
+          <DialogHeader><DialogTitle>Table</DialogTitle></DialogHeader>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>Rows</Label>
+              <Input type="number" value={tableRows} onChange={(e) => setTableRows(Number(e.target.value))} min="1" max="20" />
+            </div>
+            <div>
+              <Label>Columns</Label>
+              <Input type="number" value={tableCols} onChange={(e) => setTableCols(Number(e.target.value))} min="1" max="10" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsTableDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleAddTable}>Create Table</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
+
+export default RichTextEditor;
