@@ -1,7 +1,13 @@
 {
   "permissions": {
     "allow": [
-      "Read(D:\\My Files\\Developer\\Javascript\\Caniel\\Website/**)"
+      "Read(D:\\My Files\\Developer\\Javascript\\Caniel\\Website/**)",
+      "Bash(tasklist *)",
+      "Bash(tasklist)",
+      "Bash(findstr *)",
+      "Bash(openfiles)",
+      "Bash(wmic *)"
     ]
-  }
+  },
+  "$version": 3
 }
