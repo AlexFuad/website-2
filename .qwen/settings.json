@@ -6,7 +6,14 @@
       "Bash(tasklist)",
       "Bash(findstr *)",
       "Bash(openfiles)",
-      "Bash(wmic *)"
+      "Bash(wmic *)",
+      "Bash(d *)",
+      "Bash(do *)",
+      "Bash(del *)",
+      "Bash(xcopy *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)"
     ]
   },
   "$version": 3

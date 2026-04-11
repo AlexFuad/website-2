@@ -1,1 +1,22 @@
--e "node_modules/\n.qwen/"  
+# Dependencies
+node_modules/
+
+# Build outputs
+build/
+dist/
+
+# Misc
+.qwen/
+.vscode/
+*.log
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.swp
+*.swo
+
+# Environment variables
+.env
+.env.local  
