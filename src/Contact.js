@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Phone, MapPin, Send, User, MessageSquare, Mail2 } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, User, MessageSquare } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const Contact = () => {
@@ -167,7 +167,7 @@ const Contact = () => {
 
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
-                    <Mail2 className="w-4 h-4" />
+                    <Mail className="w-4 h-4" />
                     Email Address
                   </label>
                   <input

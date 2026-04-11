@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, Play, Code, DesignTools, Smartphone, TrendingUp } from 'lucide-react';
+import { ArrowRight, Play, Code, Palette, Smartphone, TrendingUp } from 'lucide-react';
 
 const Home = () => {
   return (
@@ -72,7 +72,7 @@ const Home = () => {
                 Transform your vision into stunning digital experiences with our creative design solutions.
               </p>
               <ul className="space-y-4 text-gray-700 dark:text-gray-300">
-                <li className="flex items-center gap-3"><DesignTools className="w-6 h-6 text-blue-500" /> Pixel-perfect UI/UX</li>
+                <li className="flex items-center gap-3"><Palette className="w-6 h-6 text-blue-500" /> Pixel-perfect UI/UX</li>
                 <li className="flex items-center gap-3"><Play className="w-6 h-6 text-purple-500" /> Interactive prototypes</li>
                 <li className="flex items-center gap-3"><TrendingUp className="w-6 h-6 text-green-500" /> Brand identity</li>
               </ul>
@@ -88,7 +88,7 @@ const Home = () => {
               <div className="absolute bottom-12 right-12 w-48 h-48 bg-white/10 rounded-2xl blur-xl" />
               <div className="relative z-10 flex items-center justify-center h-full">
                 <div className="text-white text-center">
-                  <DesignTools className="w-24 h-24 mx-auto mb-4 opacity-80" />
+                  <Palette className="w-24 h-24 mx-auto mb-4 opacity-80" />
                   <div className="bg-white/10 backdrop-blur-sm px-8 py-4 rounded-2xl">
                     Design Mockup
                   </div>

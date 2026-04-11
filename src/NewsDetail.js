@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Calendar, Eye, Tag, Share2, ThumbsUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
-import { useAuth } from '../AuthContext';
+import { useAuth } from './AuthContext';
 import toast from 'react-hot-toast';
 
 const NewsDetail = () => {
@@ -13,6 +13,7 @@ const NewsDetail = () => {
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
   const [likes, setLikes] = useState(0);
+  const [relatedPosts, setRelatedPosts] = useState([]);
 
   useEffect(() => {
     loadBlog();
@@ -22,17 +23,18 @@ const NewsDetail = () => {
     setLoading(true);
     const blogs = JSON.parse(localStorage.getItem('caniel_blogs')) || [];
     const foundBlog = blogs.find(b => b.id.toString() === id);
-    
+
     if (foundBlog) {
       // Simulate view count
       const views = (foundBlog.views || 0) + 1;
       foundBlog.views = views;
-      
+
       const updatedBlogs = blogs.map(b => b.id.toString() === id ? foundBlog : b);
       localStorage.setItem('caniel_blogs', JSON.stringify(updatedBlogs));
-      
+
       setBlog(foundBlog);
       setLikes(foundBlog.likes || 0);
+      setRelatedPosts(blogs.filter(b => b.id.toString() !== id).slice(0, 3));
     }
     setLoading(false);
   };
@@ -213,7 +215,7 @@ const NewsDetail = () => {
         >
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-12">Related Posts</h2>
           <div className="grid md:grid-cols-3 gap-6">
-            {blogs.slice(0, 3).filter(b => b.id.toString() !== id).map(related => (
+            {relatedPosts.map(related => (
               <Link key={related.id} to={`/news/${related.id}`} className="group block">
                 <div className="h-48 bg-gray-200 dark:bg-gray-800 rounded-2xl overflow-hidden mb-4 group-hover:scale-105 transition-transform">
                   <img src={related.image} alt={related.title} className="w-full h-full object-cover group-hover:scale-110" />

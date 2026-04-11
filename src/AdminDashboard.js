@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../AuthContext';
+import { useAuth } from './AuthContext';
 import { motion } from 'framer-motion';
-import { 
-  Plus, Edit2, Trash2, LogOut, FileText, Calendar, Eye, 
+import { format } from 'date-fns';
+import {
+  Plus, Edit2, Trash2, LogOut, FileText, Calendar, Eye,
   TrendingUp, BarChart3, Database, Settings, Share2, Clock,
-  ChevronLeft, Search, MoreVertical, LayoutList, Package, Image, Users 
+  ChevronLeft, Search, MoreVertical, LayoutList, Package, Image, Users
 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import ArticleEditor from '../components/blog/ArticleEditor';
-import DeleteConfirmation from '../components/blog/DeleteConfirmation';
+import ArticleEditor from './components/blog/ArticleEditor';
+import DeleteConfirmation from './components/blog/DeleteConfirmation';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('blogs');

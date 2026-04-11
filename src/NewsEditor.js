@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '../AuthContext';
-import ArticleEditor from '../components/blog/ArticleEditor';
+import { useAuth } from './AuthContext';
+import ArticleEditor from './components/blog/ArticleEditor';
 import toast from 'react-hot-toast';
 
 const NewsEditor = () => {

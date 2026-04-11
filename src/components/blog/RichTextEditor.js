@@ -1,10 +1,7 @@
 import React, { useRef, useState, useCallback } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import { Button } from '../../ui/Button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../../ui/Dialog';
-import { Input } from '../../ui/Input';
-import { Label } from '../../ui/Label';
+import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 
 const RichTextEditor = ({ value, onChange }) => {
@@ -187,101 +184,110 @@ const RichTextEditor = ({ value, onChange }) => {
       </div>
 
       {/* Link Dialog */}
-      <Dialog open={isLinkDialogOpen} onOpenChange={setIsLinkDialogOpen}>
-        <DialogContent className="bg-slate-900 border-slate-700 text-white">
-          <DialogHeader>
-            <DialogTitle>Insert Link</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label>URL</Label>
-              <Input
-                value={linkUrl}
-                onChange={(e) => setLinkUrl(e.target.value)}
-                className="mt-2 bg-slate-800 border-slate-600"
-              />
+      {isLinkDialogOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-slate-900 border border-slate-700 text-white p-6 rounded-2xl max-w-md w-full mx-4 shadow-2xl">
+            <h3 className="text-xl font-bold mb-4">Insert Link</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">URL</label>
+                <input
+                  type="text"
+                  value={linkUrl}
+                  onChange={(e) => setLinkUrl(e.target.value)}
+                  className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-xl text-white"
+                />
+              </div>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button onClick={() => setIsLinkDialogOpen(false)} className="flex-1 px-4 py-3 bg-slate-800 hover:bg-slate-700 rounded-xl transition-colors">Cancel</button>
+              <button onClick={handleAddLink} className="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors">Insert Link</button>
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsLinkDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleAddLink}>Insert Link</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        </div>
+      )}
 
       {/* Image Dialog */}
-      <Dialog open={isImageDialogOpen} onOpenChange={setIsImageDialogOpen}>
-        <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Insert Image</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label>Image URL</Label>
-              <Input
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-                className="mt-2 bg-slate-800 border-slate-600"
-              />
+      {isImageDialogOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-slate-900 border border-slate-700 text-white p-6 rounded-2xl max-w-2xl w-full mx-4 shadow-2xl">
+            <h3 className="text-xl font-bold mb-4">Insert Image</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Image URL</label>
+                <input
+                  type="text"
+                  value={imageUrl}
+                  onChange={(e) => setImageUrl(e.target.value)}
+                  className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-xl text-white"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Size</label>
+                <select
+                  value={imageSize}
+                  onChange={(e) => setImageSize(e.target.value)}
+                  className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-xl text-white"
+                >
+                  <option value="small">Small (300px)</option>
+                  <option value="medium">Medium (600px)</option>
+                  <option value="large">Large (900px)</option>
+                  <option value="full">Full Width</option>
+                </select>
+              </div>
+              {imageUrl && (
+                <img src={imageUrl} alt="Preview" className="w-full h-64 object-contain rounded-xl border border-slate-600 mt-4" />
+              )}
             </div>
-            <div>
-              <Label>Size</Label>
-              <select
-                value={imageSize}
-                onChange={(e) => setImageSize(e.target.value)}
-                className="w-full mt-2 bg-slate-800 border-slate-600 p-3 rounded-xl"
-              >
-                <option value="small">Small (300px)</option>
-                <option value="medium">Medium (600px)</option>
-                <option value="large">Large (900px)</option>
-                <option value="full">Full Width</option>
-              </select>
-            </div>
-            {imageUrl && (
-              <img src={imageUrl} alt="Preview" className="w-full h-64 object-contain rounded-xl border border-slate-600 mt-4" />
-            )}
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => {
-              setIsImageDialogOpen(false);
-              setImageUrl('https://');
-            }}>Cancel</Button>
-            <Button onClick={handleAddImage}>Insert Image</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Simplified other dialogs for brevity */}
-      <Dialog open={isVideoDialogOpen} onOpenChange={setIsVideoDialogOpen}>
-        <DialogContent className="bg-slate-900 border-slate-700 text-white">
-          <DialogHeader><DialogTitle>Video URL (YouTube)</DialogTitle></DialogHeader>
-          <Input value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} className="mt-4 bg-slate-800 border-slate-600" />
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsVideoDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleAddVideo}>Insert Video</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={isTableDialogOpen} onOpenChange={setIsTableDialogOpen}>
-        <DialogContent className="bg-slate-900 border-slate-700 text-white">
-          <DialogHeader><DialogTitle>Table</DialogTitle></DialogHeader>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label>Rows</Label>
-              <Input type="number" value={tableRows} onChange={(e) => setTableRows(Number(e.target.value))} min="1" max="20" />
-            </div>
-            <div>
-              <Label>Columns</Label>
-              <Input type="number" value={tableCols} onChange={(e) => setTableCols(Number(e.target.value))} min="1" max="10" />
+            <div className="flex gap-3 mt-6">
+              <button onClick={() => { setIsImageDialogOpen(false); setImageUrl('https://'); }} className="flex-1 px-4 py-3 bg-slate-800 hover:bg-slate-700 rounded-xl transition-colors">Cancel</button>
+              <button onClick={handleAddImage} className="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors">Insert Image</button>
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsTableDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleAddTable}>Create Table</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        </div>
+      )}
+
+      {/* Video Dialog */}
+      {isVideoDialogOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-slate-900 border border-slate-700 text-white p-6 rounded-2xl max-w-md w-full mx-4 shadow-2xl">
+            <h3 className="text-xl font-bold mb-4">Video URL (YouTube)</h3>
+            <input
+              type="text"
+              value={videoUrl}
+              onChange={(e) => setVideoUrl(e.target.value)}
+              className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-xl text-white mt-4"
+            />
+            <div className="flex gap-3 mt-6">
+              <button onClick={() => setIsVideoDialogOpen(false)} className="flex-1 px-4 py-3 bg-slate-800 hover:bg-slate-700 rounded-xl transition-colors">Cancel</button>
+              <button onClick={handleAddVideo} className="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors">Insert Video</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Table Dialog */}
+      {isTableDialogOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-slate-900 border border-slate-700 text-white p-6 rounded-2xl max-w-md w-full mx-4 shadow-2xl">
+            <h3 className="text-xl font-bold mb-4">Table</h3>
+            <div className="grid grid-cols-2 gap-4 mt-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Rows</label>
+                <input type="number" value={tableRows} onChange={(e) => setTableRows(Number(e.target.value))} min="1" max="20" className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-xl text-white" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Columns</label>
+                <input type="number" value={tableCols} onChange={(e) => setTableCols(Number(e.target.value))} min="1" max="10" className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-xl text-white" />
+              </div>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button onClick={() => setIsTableDialogOpen(false)} className="flex-1 px-4 py-3 bg-slate-800 hover:bg-slate-700 rounded-xl transition-colors">Cancel</button>
+              <button onClick={handleAddTable} className="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors">Create Table</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

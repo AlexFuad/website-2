@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import RichTextEditor from './RichTextEditor';
 import { Button } from '../../components/ui/Button';
-import { X, Save, Image, SaveAll } from 'lucide-react';
+import { X, Save, Image, SaveAll, Package, Users } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { slugify } from 'slugify';
 

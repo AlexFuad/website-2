@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Users, Award, Clock, Code, DesignTools, Smartphone } from 'lucide-react';
+import { Users, Award, Clock, Code, Palette, Smartphone } from 'lucide-react';
 
 const About = () => {
   return (
@@ -77,7 +77,7 @@ const About = () => {
               </div>
               <div className="flex items-start gap-4 p-6 bg-purple-50 dark:bg-purple-900/20 rounded-2xl">
                 <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/50 rounded-2xl flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <DesignTools className="w-6 h-6 text-purple-600" />
+                  <Palette className="w-6 h-6 text-purple-600" />
                 </div>
                 <div>
                   <h3 className="font-bold text-gray-900 dark:text-white mb-2">Creative Solutions</h3>
@@ -119,7 +119,7 @@ const About = () => {
           <div className="grid md:grid-cols-3 gap-8">
             {[
               { icon: Code, title: 'Web Development', desc: 'Custom web applications' },
-              { icon: DesignTools, title: 'UI/UX Design', desc: 'Beautiful interfaces' },
+              { icon: Palette, title: 'UI/UX Design', desc: 'Beautiful interfaces' },
               { icon: Smartphone, title: 'Mobile Apps', desc: 'iOS & Android apps' }
             ].map((service, idx) => {
               const Icon = service.icon;
